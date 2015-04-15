@@ -45,7 +45,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
+    #'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
@@ -70,8 +70,8 @@ DATABASES = {
 
 LANGUAGE_CODE = 'zh-cn'
 
-FILE_CHARSET='utf-8' 
-DEFAULT_CHARSET='utf-8' 
+FILE_CHARSET='utf-8'
+DEFAULT_CHARSET='utf-8'
 
 TIME_ZONE = 'Asia/Shanghai'
 
@@ -90,5 +90,5 @@ STATIC_URL = '/static/'
 TEMPLATE_DIRS=(
     os.path.join(BASE_DIR, 'templates'),
     os.path.join(BASE_DIR, 'accountBook\templates'),
-    
+
 )

@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+{% block title %}欢迎登陆{% endblock %}
+
+{% block content %}
+<h2>开始记账</h2>
+<form method = 'post' enctype="multipart/form-data">
+    {% csrf_token %}
+    <table>
+      <tr>
+         <td>购买项目</td><td>{{cf.content}}</td>
+      </tr>
+      <tr>
+         <td>花费</td><td>{{cf.cost}}</td>
+      </tr>
+      <tr>
+         <td>时间</td><td>{{cf.cost_date}}</td>
+      </tr>
+     </table>
+    <input type="submit" value = "记账" />
+</form>
+
+<h2>历史账单</h2>
+<div class="results">
+<table id="result_list" align='center'>
+<thead>
+<tr>
+
+<th scope="col" class="action-checkbox-column">
+   
+   <div class="text"><span></span></div>
+   <div class="clear"></div>
+</th>
+<th scope="col" class="column-__str__">
+   <div class="text"><span>记账人</span></div>
+   <div class="clear"></div>
+</th>
+<th scope="col" class="column-__str__">
+   <div class="text"><span>购买项目</span></div>
+   <div class="clear"></div>
+</th>
+<th scope="col" class="column-__str__">
+   <div class="text"><span>花费</span></div>
+   <div class="clear"></div>
+</th>
+<th scope="col" class="column-__str__">
+   <div class="text"><span>时间</span></div>
+   <div class="clear"></div>
+</th>
+</tr>
+</thead>
+<tbody>
+
+{% for item in items %}
+<tr class="{% cycle row1, row2 %}">
+   <td class="action-checkbox">
+   </td>
+   <th class="field-__str__">
+      {{ username }}
+   </th>
+   <th class="field-__str__">
+      {{ item.content }}
+   </th>
+   <th class="field-__str__">
+      {{ item.cost }}
+   </th>
+   <th class="field-__str__">
+      {{ item.cost_date }}
+   </th>
+</tr>
+{% endfor %}
+<tr class="{% cycle row1, row2 %}">
+   <td class="action-checkbox">
+   </td>
+   <th class="field-__str__">
+      
+   </th>
+   <th class="field-__str__">
+      
+   </th>
+   <th class="field-__str__">
+      {{ total_cost }}
+   </th>
+   <th class="field-__str__">
+      
+   </th>
+</tr>
+</tbody>
+</table>
+</div>
+{% endblock %}
+
+{% block username %}
+{{ username }}
+{% endblock %}

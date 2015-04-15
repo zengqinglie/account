@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>{% block title %}{% endblock %}</title>
+    <link rel="stylesheet" type="text/css" href="/static/admin/css/base.css">
+    <link rel="stylesheet" type="text/css" href="/static/admin/css/changelists.css">
+    <script type="text/javascript" src="/admin/jsi18n/"></script><style type="text/css"></style>
+    <!--[if lte IE 7]><link rel="stylesheet" type="text/css" href="/static/admin/css/ie.css" /><![endif]-->
+    <script type="text/javascript">window.__admin_media_prefix__ = "/static/admin/";</script>
+    <script type="text/javascript">window.__admin_utc_offset__ = "28800";</script>
+    <script type="text/javascript" src="/static/admin/js/core.js"></script>
+    <script type="text/javascript" src="/static/admin/js/admin/RelatedObjectLookups.js"></script>
+    <script type="text/javascript" src="/static/admin/js/jquery.js"></script>
+    <script type="text/javascript" src="/static/admin/js/jquery.init.js"></script>
+    <script type="text/javascript" src="/static/admin/js/actions.js"></script>
+    <script type="text/javascript">
+        (function($) {
+            $(document).ready(function($) {
+                $("tr input.action-select").actions();
+            });
+        })(django.jQuery);
+    </script>
+</head>
+
+<body>
+<div id="header">
+        <div id="branding">
+<h1 id="site-name"><a href="#">记账管理</a></h1>
+        </div>
+        <div id="user-tools">            
+                欢迎，
+                <strong>{% block username%} 游客{% endblock %}</strong>./
+                <a href="{% url 'accountBook:logout' %}">注销</a>
+        </div>
+        
+    </div>
+<div align='center'>
+{% block content %}
+{% endblock %}
+</div>
+</body>
+</html>

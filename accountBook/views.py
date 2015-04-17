@@ -78,7 +78,7 @@ def index(req, id):
 
     items = Book.objects.filter(user_id=id).order_by('-cost_date')
     total = SumCost.objects.get(user_id=id)    
-    
+    message = None
     if req.method == 'POST':
         cf = BookForm(req.POST)
         if cf.is_valid():
@@ -91,12 +91,16 @@ def index(req, id):
             Book.objects.create(user_id=user_id, content=content, cost=decimal.Decimal(cost), cost_date=cost_date)
             total.sum_cost += decimal.Decimal(cost)
             total.save()
+            #message = '记账成功!'
+            return HttpResponseRedirect('/account/%s/index/' % user.id) 
             #response = HttpResponse('记录成功')
             #return response
     else:
         cf = BookForm()
-        
-    return render_to_response('index.html' ,{'username':user.username, 'items':items, 'total_cost':total.sum_cost, 'cf':cf}, context_instance=RequestContext(req))
+    #return render_to_response('index.html' ,{'message':message, 'cf':cf}, context_instance=RequestContext(req))
+    return render_to_response('index.html' ,
+                              {'username':user.username, 'items':items, 'total_cost':total.sum_cost, 'cf':cf, 'message':message}, 
+                              context_instance=RequestContext(req))
 
 #退出
 def logout(req):

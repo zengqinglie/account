@@ -1,6 +1,8 @@
 {% extends 'base.html' %}
 {% block title %}欢迎登陆{% endblock %}
-
+{% block style %}
+<script src="/static/js/laydate/laydate.js"></script>
+{% endblock %}
 {% block content %}
 <h2>开始记账</h2>
 <form method = 'post' enctype="multipart/form-data">
@@ -18,7 +20,7 @@
      </table>
     <input type="submit" value = "记账" />
 </form>
-
+{% if message %}<p><strong>{{ message }}</strong></p>{% endif %}
 <h2>历史账单</h2>
 <div class="results">
 <table id="result_list" align='center'>
@@ -45,6 +47,7 @@
 <th scope="col" class="column-__str__">
    <div class="text"><span>时间</span></div>
    <div class="clear"></div>
+
 </th>
 </tr>
 </thead>
@@ -87,6 +90,20 @@
 </tbody>
 </table>
 </div>
+
+<script>
+var start = {
+    elem: '#id_cost_date',
+    format: 'YYYY/MM/DD hh:mm:ss',
+    min: '1000-01-01 00:00:00', //设定最小日期为当前日期
+    max: '2099-06-16 23:59:59', //最大日期
+    istime: true,
+    istoday: true,
+	festival: true
+};
+laydate(start);
+</script>
+
 {% endblock %}
 
 {% block username %}

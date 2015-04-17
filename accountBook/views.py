@@ -18,7 +18,7 @@ class UserForm(forms.Form):
 class BookForm(forms.Form):
     content = forms.CharField(label='购买项目', max_length=100)
     cost = forms.DecimalField(label='花费', max_digits=10, decimal_places=2)
-    cost_date = forms.DateTimeField(label='时间', required=False)
+    cost_date = forms.DateTimeField(label='时间', required=False, widget=forms.DateTimeInput(attrs={'class': 'laydate-icon'}))
     
 #注册
 def regist(req):

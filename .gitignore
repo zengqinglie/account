@@ -55,3 +55,11 @@ docs/_build/
 
 # PyBuilder
 target/
+
+# wingide
+*.wpr
+*.wpu
+.vsdx
+
+# db
+db.sqlite3

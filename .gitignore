@@ -59,7 +59,7 @@ target/
 # wingide
 *.wpr
 *.wpu
-.vsdx
+*.vsdx
 
 # db
 db.sqlite3

@@ -9,6 +9,7 @@ urlpatterns = patterns('',
     url(r'^regist/$', views.regist, name = 'regist'),
     #/1/index
     url(r'^(?P<id>\d+)/index/$', views.index, name = 'index'),
+    url(r'^(?P<id>\d+)/index/(?P<page_num>\d+)/$', views.index, name = 'index'),
     #url(r'^index/$', views.index, name = 'index'),
     url(r'^logout/$', views.logout, name = 'logout'),
 )

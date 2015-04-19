@@ -1,0 +1,13 @@
+{% if book_page.has_previous or book_page.next_page_number%}
+    {% if book_page.has_previous %}
+        <a href="/account/{{user_id}}/index/{{book_page.previous_page_number}}">上一页</a>
+    {% endif %}
+    
+    {% for pn in p.page_range %}
+        <a href="/account/{{user_id}}/index/{{pn}}">{{pn}}</a>
+    {% endfor %}
+    
+    {% if book_page.has_next %}
+        <a href="/account/{{user_id}}/index/{{book_page.next_page_number}}">下一页</a>
+    {% endif %}
+{% endif %}

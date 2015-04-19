@@ -5,6 +5,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.template import RequestContext
 from django import forms
 from accountBook.models import Book, User, SumCost
+from django.core.paginator import Paginator
 import datetime, decimal
 
 
@@ -69,20 +70,21 @@ def login(req):
     return render_to_response('login.html', {'uf':uf}, context_instance=RequestContext(req))
 
 #登陆成功
-def index(req, id):
+def index(req, id, page_num=1):
     #登陆校验
     user = User.objects.get(pk=id)
     #username = req.COOKIES.get('username','')
     if req.session.get('userid', default=None) != user.id:
-        return HttpResponseRedirect('/account/login/') 
-
+        return HttpResponseRedirect('/account/login/')
+    user_id = user.id
     items = Book.objects.filter(user_id=id).order_by('-cost_date')
-    total = SumCost.objects.get(user_id=id)    
+    total = SumCost.objects.get(user_id=id)
+    p = Paginator(items, 10)
+    book_page = p.page(page_num)
     message = None
     if req.method == 'POST':
         cf = BookForm(req.POST)
         if cf.is_valid():
-            user_id = user.id
             content = cf.cleaned_data['content']
             cost = cf.cleaned_data['cost']
             cost_date = cf.cleaned_data['cost_date']
@@ -99,7 +101,7 @@ def index(req, id):
         cf = BookForm()
     #return render_to_response('index.html' ,{'message':message, 'cf':cf}, context_instance=RequestContext(req))
     return render_to_response('index.html' ,
-                              {'username':user.username, 'items':items, 'total_cost':total.sum_cost, 'cf':cf, 'message':message}, 
+                              {'user_id':user_id, 'username':user.username, 'book_page':book_page, 'p':p, 'total_cost':total.sum_cost, 'cf':cf, 'message':message}, 
                               context_instance=RequestContext(req))
 
 #退出

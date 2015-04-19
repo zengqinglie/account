@@ -114,3 +114,36 @@ def logout(req):
     except KeyError:
         pass
     return response
+
+#修改页面
+def updateView(req, id):
+    #登陆校验    
+    item = get_object_or_404(Book, pk=int(id))
+    return render_to_response('update_book.html', {'cf': item}, context_instance=RequestContext(req))
+
+def update(req):
+    user_id = req.session.get('userid')
+    id = req.POST['id']
+    content = req.POST['content']
+    cost = req.POST['cost']
+    cost_date = req.POST['cost_date']
+    item = get_object_or_404(Book, pk=int(id))
+    total = SumCost.objects.get(user_id=user_id)
+    st = decimal.Decimal(cost) - decimal.Decimal(item.cost)
+    total.sum_cost += st
+    total.save()
+    item.content = content
+    item.cost = decimal.Decimal(cost)
+    item.cost_date = cost_date
+    item.save()
+    return HttpResponseRedirect('/account/%s/index' % user_id)
+
+#删除
+def delete(req, id):
+    user_id = req.session.get('userid')
+    item = get_object_or_404(Book, pk=int(id))
+    total = SumCost.objects.get(user_id=user_id)
+    total.sum_cost -= decimal.Decimal(item.cost)
+    total.save()
+    item.delete()
+    return HttpResponseRedirect('/account/%s/index' % user_id)    

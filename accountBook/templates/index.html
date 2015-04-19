@@ -48,7 +48,10 @@
 <th scope="col" class="column-__str__">
    <div class="text"><span>时间</span></div>
    <div class="clear"></div>
-
+</th>
+<th scope="col" class="column-__str__">
+   <div class="text"><span>操作</span></div>
+   <div class="clear"></div>
 </th>
 </tr>
 </thead>
@@ -68,7 +71,11 @@
       {{ item.cost }}
    </th>
    <th class="field-__str__">
-      {{ item.cost_date }}
+      {{ item.cost_date|date:"Y-m-d H:i" }}
+   </th>
+   <th class="field-__str__">
+      <a href="{% url 'accountBook:updateView' item.id %}">修改</a>
+      <a href="{% url 'accountBook:delete' item.id %}">删除</a>
    </th>
 </tr>
 {% endfor %}

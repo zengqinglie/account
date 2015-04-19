@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% block title %}欢迎登陆{% endblock %}
+{% block style %}
+<script src="/static/js/laydate/laydate.js"></script>
+{% endblock %}
+{% block content %}
+<h2>修改</h2>
+<form action="{% url 'accountBook:update' %}" method = "post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <table>
+      <tr>
+         <td>购买项目</td>
+	    <td>
+	       <input name="id" type="hidden" value="{{cf.id}}">
+	       <input name="content" type="text" value="{{cf.content}}">
+	    </td>
+      </tr>
+      <tr>
+         <td>花费</td><td><input name="cost" step="0.01" type="text" value="{{cf.cost}}"></td>
+      </tr>
+      <tr>
+         <td>时间</td><td><input class="laydate-icon" id="id_cost_date" name="cost_date" type="text" value="{{cf.cost_date|date:"Y-m-d H:i"}}"></td>
+      </tr>
+     </table>
+    <input type="submit" value = "修改" />
+</form>
+
+<script>
+var start = {
+    elem: '#id_cost_date',
+    format: 'YYYY-MM-DD hh:mm:ss',
+    min: '1000-01-01 00:00:00', //设定最小日期为当前日期
+    max: '2099-06-16 23:59:59', //最大日期
+    istime: true,
+    istoday: true,
+	festival: true
+};
+laydate(start);
+</script>
+
+{% endblock %}
+
+{% block username %}
+{{ username }}
+{% endblock %}

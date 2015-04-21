@@ -87,7 +87,7 @@ def index(req, id, page_num=1):
     #按天统计
     today_start = datetime.datetime(year, month, day, 0, 0, 0)
     today_end = datetime.datetime(year, month, day, 23, 59, 59)
-    day_cost_sum = Book.objects.filter(cost_date__range=(today_start, today_end)).aggregate(Sum('cost'))
+    day_cost_sum = Book.objects.filter(user_id=id, cost_date__range=(today_start, today_end)).aggregate(Sum('cost'))
     if not day_cost_sum['cost__sum']:
         day_cost_sum['cost__sum'] = 0    
 
@@ -100,7 +100,7 @@ def index(req, id, page_num=1):
     #按周统计
     week_start = datetime.date(year, month, monday)
     week_end = datetime.datetime(year, month, sunday, 23, 59, 59)
-    week_cost_sum = Book.objects.filter(cost_date__range=(week_start, week_end)).aggregate(Sum('cost'))
+    week_cost_sum = Book.objects.filter(user_id=id, cost_date__range=(week_start, week_end)).aggregate(Sum('cost'))
     if not week_cost_sum['cost__sum']:
         week_cost_sum['cost__sum'] = 0
     
@@ -108,7 +108,7 @@ def index(req, id, page_num=1):
     month_start = datetime.date(year, month, 1)
     month_end = datetime.date(year, month, calendar.monthrange(year, month)[1])
     #统计本月
-    month_cost_sum = Book.objects.filter(cost_date__range=(month_start, month_end)).aggregate(Sum('cost'))
+    month_cost_sum = Book.objects.filter(user_id=id, cost_date__range=(month_start, month_end)).aggregate(Sum('cost'))
     if not month_cost_sum['cost__sum']:
         month_cost_sum['cost__sum'] = 0       
     

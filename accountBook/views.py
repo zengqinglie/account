@@ -6,7 +6,8 @@ from django.template import RequestContext
 from django import forms
 from accountBook.models import Book, User, SumCost
 from django.core.paginator import Paginator
-import datetime, decimal
+from django.db.models import Sum
+import datetime, decimal, calendar
 
 
 # Create your views here.
@@ -75,7 +76,43 @@ def index(req, id, page_num=1):
     user = User.objects.get(pk=id)
     #username = req.COOKIES.get('username','')
     if req.session.get('userid', default=None) != user.id:
-        return HttpResponseRedirect('/account/login/')
+        return HttpResponseRedirect('/account/login/')    
+    
+    #当前日期
+    today = datetime.datetime.now().date()
+    month = today.month
+    year = today.year
+    day = today.day
+    
+    #按天统计
+    today_start = datetime.datetime(year, month, day, 0, 0, 0)
+    today_end = datetime.datetime(year, month, day, 23, 59, 59)
+    day_cost_sum = Book.objects.filter(cost_date__range=(today_start, today_end)).aggregate(Sum('cost'))
+    if not day_cost_sum['cost__sum']:
+        day_cost_sum['cost__sum'] = 0    
+
+    #获取本周起止时间
+    for week in calendar.monthcalendar(year, month):
+        for days in week:
+            if days == day:
+                monday = week[0]
+                sunday = week[-1]
+    #按周统计
+    week_start = datetime.date(year, month, monday)
+    week_end = datetime.datetime(year, month, sunday, 23, 59, 59)
+    week_cost_sum = Book.objects.filter(cost_date__range=(week_start, week_end)).aggregate(Sum('cost'))
+    if not week_cost_sum['cost__sum']:
+        week_cost_sum['cost__sum'] = 0
+    
+    #获取本月时间
+    month_start = datetime.date(year, month, 1)
+    month_end = datetime.date(year, month, calendar.monthrange(year, month)[1])
+    #统计本月
+    month_cost_sum = Book.objects.filter(cost_date__range=(month_start, month_end)).aggregate(Sum('cost'))
+    if not month_cost_sum['cost__sum']:
+        month_cost_sum['cost__sum'] = 0       
+    
+    #获取展示列表
     user_id = user.id
     items = Book.objects.filter(user_id=id).order_by('-cost_date')
     total = SumCost.objects.get(user_id=id)
@@ -101,7 +138,7 @@ def index(req, id, page_num=1):
         cf = BookForm()
     #return render_to_response('index.html' ,{'message':message, 'cf':cf}, context_instance=RequestContext(req))
     return render_to_response('index.html' ,
-                              {'user_id':user_id, 'username':user.username, 'book_page':book_page, 'p':p, 'total_cost':total.sum_cost, 'cf':cf, 'message':message}, 
+                              {'user_id':user_id, 'username':user.username, 'book_page':book_page, 'p':p, 'total_cost':total.sum_cost, 'cf':cf, 'message':message, 'day_cost_sum':day_cost_sum['cost__sum'], 'week_cost_sum':week_cost_sum['cost__sum'], "month_cost_sum":month_cost_sum['cost__sum']}, 
                               context_instance=RequestContext(req))
 
 #退出

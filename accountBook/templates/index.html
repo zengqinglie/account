@@ -4,6 +4,15 @@
 <script src="/static/js/laydate/laydate.js"></script>
 {% endblock %}
 {% block content %}
+
+<table>
+  <tr>
+     <td>今日花费</td><td>{{day_cost_sum}}元</td>
+     <td>本周花费</td><td>{{week_cost_sum}}元</td>
+     <td>本月花费</td><td>{{month_cost_sum}}元</td>
+  </tr>
+ </table>
+
 <h2>开始记账</h2>
 <form method = 'post' enctype="multipart/form-data">
     {% csrf_token %}

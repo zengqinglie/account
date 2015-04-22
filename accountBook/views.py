@@ -117,6 +117,8 @@ def index(req, id, page_num=1):
         month_earn_sum['cost__sum'] = 0    
     #累计收入    
     total_earn_sum = Book.objects.filter(user_id=id, cost__lt=0).aggregate(Sum('cost'))
+    if not total_earn_sum['cost__sum']:
+        total_earn_sum['cost__sum'] = 0    
         
 
     #获取分页展示列表

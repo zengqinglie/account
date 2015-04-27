@@ -13,15 +13,15 @@ import datetime, decimal, calendar
 # Create your views here.
 
 
-class UserForm(forms.Form): 
+class UserForm(forms.Form):
     username = forms.CharField(label='用户名', max_length=100)
     password = forms.CharField(label='密码', widget=forms.PasswordInput())
-    
+
 class BookForm(forms.Form):
     content = forms.CharField(label='购买项目', max_length=100)
     cost = forms.DecimalField(label='花费', max_digits=10, decimal_places=2)
     cost_date = forms.DateTimeField(label='时间', required=False, widget=forms.DateTimeInput(attrs={'class': 'laydate-icon'}))
-    
+
 #注册
 def regist(req):
     if req.method == 'POST':
@@ -38,7 +38,7 @@ def regist(req):
                 SumCost.objects.create(user_id=user.id, sum_cost=0)
                 return HttpResponse('regist success!!')
             else:
-                return HttpResponseRedirect('/account/login/') 
+                return HttpResponseRedirect('/account/login/')
     else:
         uf = UserForm()
     return render_to_response('regist.html',{'uf':uf}, context_instance=RequestContext(req))
@@ -65,7 +65,7 @@ def login(req):
             req.session['userid'] = user.id
             req.session['username'] = username
             return response
-                
+
     else:
         uf = UserForm()
     return render_to_response('login.html', {'uf':uf}, context_instance=RequestContext(req))
@@ -76,50 +76,52 @@ def index(req, id, page_num=1):
     user = User.objects.get(pk=id)
     #username = req.COOKIES.get('username','')
     if req.session.get('userid', default=None) != user.id:
-        return HttpResponseRedirect('/account/login/')    
-    
+        return HttpResponseRedirect('/account/login/')
+
     #当前日期
     today = datetime.datetime.now().date()
     month = today.month
     year = today.year
     day = today.day
-    
+
     #按天统计
     today_start = datetime.datetime(year, month, day, 0, 0, 0)
     today_end = datetime.datetime(year, month, day, 23, 59, 59)
     day_cost_sum = Book.objects.filter(user_id=id, cost__gt=0, cost_date__range=(today_start, today_end)).aggregate(Sum('cost'))
     if not day_cost_sum['cost__sum']:
-        day_cost_sum['cost__sum'] = 0    
+        day_cost_sum['cost__sum'] = 0
 
     #获取本周起止时间
     for week in calendar.monthcalendar(year, month):
         for days in week:
             if days == day:
-                monday = week[0]
-                sunday = week[-1]
+                temp_week = list(set(week))
+                temp_week.remove(0)
+                monday = temp_week[0]
+                sunday = temp_week[-1]
     #按周统计
     week_start = datetime.date(year, month, monday)
     week_end = datetime.datetime(year, month, sunday, 23, 59, 59)
     week_cost_sum = Book.objects.filter(user_id=id, cost__gt=0, cost_date__range=(week_start, week_end)).aggregate(Sum('cost'))
     if not week_cost_sum['cost__sum']:
         week_cost_sum['cost__sum'] = 0
-    
+
     #获取本月时间
     month_start = datetime.date(year, month, 1)
     month_end = datetime.date(year, month, calendar.monthrange(year, month)[1])
     #统计本月
     month_cost_sum = Book.objects.filter(user_id=id, cost__gt=0, cost_date__range=(month_start, month_end)).aggregate(Sum('cost'))
     if not month_cost_sum['cost__sum']:
-        month_cost_sum['cost__sum'] = 0       
-    #本月收入    
+        month_cost_sum['cost__sum'] = 0
+    #本月收入
     month_earn_sum = Book.objects.filter(user_id=id, cost__lt=0, cost_date__range=(month_start, month_end)).aggregate(Sum('cost'))
     if not month_earn_sum['cost__sum']:
-        month_earn_sum['cost__sum'] = 0    
-    #累计收入    
+        month_earn_sum['cost__sum'] = 0
+    #累计收入
     total_earn_sum = Book.objects.filter(user_id=id, cost__lt=0).aggregate(Sum('cost'))
     if not total_earn_sum['cost__sum']:
-        total_earn_sum['cost__sum'] = 0    
-        
+        total_earn_sum['cost__sum'] = 0
+
 
     #获取分页展示列表
     user_id = user.id
@@ -128,7 +130,7 @@ def index(req, id, page_num=1):
     p = Paginator(items, 10)
     book_page = p.page(page_num)
     message = None
-    
+
     #记账表单处理
     if req.method == 'POST':
         cf = BookForm(req.POST)
@@ -142,7 +144,7 @@ def index(req, id, page_num=1):
             total.sum_cost += decimal.Decimal(cost)
             total.save()
             #message = '记账成功!'
-            return HttpResponseRedirect('/account/%s/index/' % user.id) 
+            return HttpResponseRedirect('/account/%s/index/' % user.id)
             #response = HttpResponse('记录成功')
             #return response
     else:
@@ -161,7 +163,7 @@ def index(req, id, page_num=1):
                                "month_cost_sum":month_cost_sum['cost__sum'],
                                "month_earn_sum":abs(month_earn_sum['cost__sum']),
                                "total_earn_sum":abs(total_earn_sum['cost__sum']),
-                               }, 
+                               },
                               context_instance=RequestContext(req))
 
 #退出
@@ -177,7 +179,7 @@ def logout(req):
 
 #修改页面
 def updateView(req, id):
-    #登陆校验    
+    #登陆校验
     item = get_object_or_404(Book, pk=int(id))
     return render_to_response('update_book.html', {'cf': item}, context_instance=RequestContext(req))
 
@@ -206,4 +208,4 @@ def delete(req, id):
     total.sum_cost -= decimal.Decimal(item.cost)
     total.save()
     item.delete()
-    return HttpResponseRedirect('/account/%s/index' % user_id)    
+    return HttpResponseRedirect('/account/%s/index' % user_id)

@@ -95,8 +95,10 @@ def index(req, id, page_num=1):
     for week in calendar.monthcalendar(year, month):
         for days in week:
             if days == day:
-                monday = week[0]
-                sunday = week[-1]
+                temp_week = list(set(week))
+                temp_week.remove(0)
+                monday = temp_week[0]
+                sunday = temp_week[-1]
     #按周统计
     week_start = datetime.date(year, month, monday)
     week_end = datetime.datetime(year, month, sunday, 23, 59, 59)

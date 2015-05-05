@@ -96,7 +96,8 @@ def index(req, id, page_num=1):
         for days in week:
             if days == day:
                 temp_week = list(set(week))
-                temp_week.remove(0)
+                if 0 in temp_week:
+                    temp_week.remove(0)
                 monday = temp_week[0]
                 sunday = temp_week[-1]
     #按周统计

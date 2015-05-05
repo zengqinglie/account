@@ -92,17 +92,13 @@ def index(req, id, page_num=1):
         day_cost_sum['cost__sum'] = 0
 
     #获取本周起止时间
-    for week in calendar.monthcalendar(year, month):
-        for days in week:
-            if days == day:
-                temp_week = list(set(week))
-                if 0 in temp_week:
-                    temp_week.remove(0)
-                monday = temp_week[0]
-                sunday = temp_week[-1]
+    weekday = today.weekday()
+    monday = today - datetime.timedelta(weekday)
+    sunday = monday + datetime.timedelta(6)
+    
     #按周统计
-    week_start = datetime.date(year, month, monday)
-    week_end = datetime.datetime(year, month, sunday, 23, 59, 59)
+    week_start = monday
+    week_end = datetime.datetime(year, month, sunday.day, 23, 59, 59)
     week_cost_sum = Book.objects.filter(user_id=id, cost__gt=0, cost_date__range=(week_start, week_end)).aggregate(Sum('cost'))
     if not week_cost_sum['cost__sum']:
         week_cost_sum['cost__sum'] = 0

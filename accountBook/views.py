@@ -85,9 +85,7 @@ def index(req, id, page_num=1):
     day = today.day
 
     #按天统计
-    today_start = datetime.datetime(year, month, day, 0, 0, 0)
-    today_end = datetime.datetime(year, month, day, 23, 59, 59)
-    day_cost_sum = Book.objects.filter(user_id=id, cost__gt=0, cost_date__range=(today_start, today_end)).aggregate(Sum('cost'))
+    day_cost_sum = Book.objects.filter(user_id=id, cost__gt=0, cost_date__year=year, cost_date__month=month, cost_date__day=day).aggregate(Sum('cost'))
     if not day_cost_sum['cost__sum']:
         day_cost_sum['cost__sum'] = 0
 
@@ -95,7 +93,6 @@ def index(req, id, page_num=1):
     weekday = today.weekday()
     monday = today - datetime.timedelta(weekday)
     sunday = monday + datetime.timedelta(6)
-    
     #按周统计
     week_start = monday
     week_end = datetime.datetime(year, month, sunday.day, 23, 59, 59)
@@ -104,16 +101,42 @@ def index(req, id, page_num=1):
         week_cost_sum['cost__sum'] = 0
 
     #获取本月时间
-    month_start = datetime.date(year, month, 1)
-    month_end = datetime.date(year, month, calendar.monthrange(year, month)[1])
-    #统计本月
-    month_cost_sum = Book.objects.filter(user_id=id, cost__gt=0, cost_date__range=(month_start, month_end)).aggregate(Sum('cost'))
+    #month_start = datetime.date(year, month, 1)
+    #month_end = datetime.date(year, month, calendar.monthrange(year, month)[1])
+    #获取上月时间
+    #last_month_start = datetime.date(year, month-1, 1)
+    #last_month_end = datetime.date(year, month-1, calendar.monthrange(year, month-1)[1])
+
+    #本月花费
+    month_cost_sum = Book.objects.filter(user_id=id, cost__gt=0, cost_date__year=year, cost_date__month=month).aggregate(Sum('cost'))
     if not month_cost_sum['cost__sum']:
         month_cost_sum['cost__sum'] = 0
+
+    #上月花费
+    last_month_cost_sum = Book.objects.filter(user_id=id, cost__gt=0, cost_date__year=year, cost_date__month=month-1).aggregate(Sum('cost'))
+    if not last_month_cost_sum['cost__sum']:
+        last_month_cost_sum['cost__sum'] = 0    
+
+    #本年花费
+    year_cost_sum = Book.objects.filter(user_id=id, cost__gt=0, cost_date__year=year).aggregate(Sum('cost'))
+    if not year_cost_sum['cost__sum']:
+        year_cost_sum['cost__sum'] = 0
+        
+    #累计花费
+    total_cost_sum = Book.objects.filter(user_id=id, cost__gt=0).aggregate(Sum('cost'))
+    if not total_cost_sum['cost__sum']:
+        total_cost_sum['cost__sum'] = 0
+    
     #本月收入
-    month_earn_sum = Book.objects.filter(user_id=id, cost__lt=0, cost_date__range=(month_start, month_end)).aggregate(Sum('cost'))
+    month_earn_sum = Book.objects.filter(user_id=id, cost__lt=0, cost_date__year=year, cost_date__month=month).aggregate(Sum('cost'))
     if not month_earn_sum['cost__sum']:
         month_earn_sum['cost__sum'] = 0
+    
+    #本年收入
+    year_earn_sum = Book.objects.filter(user_id=id, cost__lt=0, cost_date__year=year).aggregate(Sum('cost'))
+    if not year_earn_sum['cost__sum']:
+        year_earn_sum['cost__sum'] = 0
+    
     #累计收入
     total_earn_sum = Book.objects.filter(user_id=id, cost__lt=0).aggregate(Sum('cost'))
     if not total_earn_sum['cost__sum']:
@@ -157,9 +180,13 @@ def index(req, id, page_num=1):
                                'message':message,
                                'day_cost_sum':day_cost_sum['cost__sum'],
                                'week_cost_sum':week_cost_sum['cost__sum'],
-                               "month_cost_sum":month_cost_sum['cost__sum'],
-                               "month_earn_sum":abs(month_earn_sum['cost__sum']),
-                               "total_earn_sum":abs(total_earn_sum['cost__sum']),
+                               'month_cost_sum':month_cost_sum['cost__sum'],
+                               'last_month_cost_sum':last_month_cost_sum['cost__sum'],
+                               'year_cost_sum':year_cost_sum['cost__sum'],
+                               'total_cost_sum':total_cost_sum['cost__sum'],
+                               'month_earn_sum':abs(month_earn_sum['cost__sum']),
+                               'year_earn_sum':abs(year_earn_sum['cost__sum']),
+                               'total_earn_sum':abs(total_earn_sum['cost__sum']),
                                },
                               context_instance=RequestContext(req))
 

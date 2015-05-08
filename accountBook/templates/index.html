@@ -3,6 +3,7 @@
 {% block style %}
 <script src="/static/js/laydate/laydate.js"></script>
 {% endblock %}
+
 {% block content %}
 
 <table>
@@ -12,9 +13,14 @@
      <td>本月花费</td><td>{{month_cost_sum}}元</td>
   </tr>
   <tr>
+     <td>上月花费</td><td>{{last_month_cost_sum}}元</td>
+     <td>本年花费</td><td>{{year_cost_sum}}元</td>
+     <td>累计花费</td><td>{{total_cost_sum}}元</td>
+  </tr>
+  <tr>
      <td>本月收入</td><td>{{month_earn_sum}}元</td>
+     <td>本年收入</td><td>{{year_earn_sum}}元</td>
      <td>累计收入</td><td>{{total_earn_sum}}元</td>
-     <td></td><td></td>
   </tr>
  </table>
 

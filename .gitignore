@@ -60,6 +60,6 @@ target/
 *.wpr
 *.wpu
 *.vsdx
-
+*.sh
 # db
 db.sqlite3
